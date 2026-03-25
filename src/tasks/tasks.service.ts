@@ -5,6 +5,8 @@ import {
 	HttpStatus
 } from '@nestjs/common';
 import { Task } from './entities/task.entitie';
+import { CreateTaskDto } from './dto/create.task.dto';
+import { UpdateTaskDto } from './dto/update.task.dto';
 
 @Injectable()
 export class TasksService {
@@ -84,18 +86,18 @@ export class TasksService {
 		throw new HttpException("Tarefa não encontrada", HttpStatus.NOT_FOUND);
 	}
 
-	create(body: any) {
+	create(createTaskDto: CreateTaskDto) {
 		const newId = this.tasks.length + 1;
 		const newTask: Task = {
 			id: newId,
 			completed: false,
-			...body
+			...createTaskDto
 		}
 		this.tasks.push(newTask);
 		return newTask;
 	}
 
-	update(id: string, body: any) {
+	update(id: string, updateTaskDto: UpdateTaskDto) {
 		const taskIndex = this.tasks.findIndex(task => task.id === Number(id));
 		if (taskIndex === -1) {
 			throw new HttpException("Tarefa não encontrada", HttpStatus.NOT_FOUND);
@@ -103,12 +105,17 @@ export class TasksService {
 		const taskItem = this.tasks[taskIndex];
 		this.tasks[taskIndex] = {
 			...taskItem,
-			...body
+			...updateTaskDto
 		};
 		return this.tasks[taskIndex];
 	}
 
 	delete(id: string) {
-		return "Deletar a a tarefa: " + id
+		const taskIndex = this.tasks.findIndex(task => task.id === Number(id));
+		if (taskIndex === -1) {
+			throw new HttpException("Tarefa não encontrada", HttpStatus.NOT_FOUND);
+		}
+		this.tasks.splice(taskIndex, 1);
+		return "Tarefa deletada com sucesso";
 	}
 }
