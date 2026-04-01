@@ -4,18 +4,26 @@ import {
 	NotFoundException,
 	HttpStatus
 } from '@nestjs/common';
-import { Task } from './entities/task.entitie';
 import { CreateTaskDto } from './dto/create.task.dto';
 import { UpdateTaskDto } from './dto/update.task.dto';
 import { DatabaseService } from '../database/database.service';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { resolvePagination } from 'src/common/pagination/resolvePagination';
 
 @Injectable()
 export class TasksService {
 	constructor(private readonly databaseService: DatabaseService) { }
 
-	async listAllTasks() {
+	async listAllTasks(paginationDto?: PaginationDto) {
+		const { limit, offset } = resolvePagination(paginationDto);
 		try {
-			const allTasks = await this.databaseService.task.findMany();
+			const allTasks = await this.databaseService.task.findMany({
+				take: limit,
+				skip: offset,
+				orderBy: {
+					createdAt: 'desc'
+				}
+			});
 			return allTasks;
 		} catch (error) {
 			throw new HttpException(
