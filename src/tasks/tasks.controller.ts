@@ -7,18 +7,24 @@ import {
 	Param,
 	Query,
 	Body,
-	ParseIntPipe
+	ParseIntPipe,
+	UseInterceptors,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create.task.dto';
 import { UpdateTaskDto } from './dto/update.task.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { LoggerInterceptor } from 'src/common/interceptors/logger.interceptor';
+import { BodyCreateTaskInterceptor } from 'src/common/interceptors/body-create-task.interceptor';
+import { AddHeaderInterceptor } from 'src/common/interceptors/add-header.interceptor';
 
 @Controller('tasks')
 export class TasksController {
 	constructor(private readonly taskService: TasksService) { }
 
 	@Get()
+	@UseInterceptors(LoggerInterceptor)
+	@UseInterceptors(AddHeaderInterceptor)
 	getTasks(@Query() paginationDto: PaginationDto) {
 		return this.taskService.listAllTasks(paginationDto)
 	}
@@ -34,6 +40,8 @@ export class TasksController {
 	}
 
 	@Post()
+	@UseInterceptors(LoggerInterceptor)
+	@UseInterceptors(BodyCreateTaskInterceptor)
 	createTask(@Body() createTaskDto: CreateTaskDto) {
 		return this.taskService.create(createTaskDto)
 	}
