@@ -52,7 +52,9 @@ export class TasksService {
 			const newTask = await this.databaseService.task.create({
 				data: {
 					name: createTaskDto.name,
-					description: createTaskDto.description
+					description: createTaskDto.description,
+					userId: createTaskDto.userId,
+					completed: false
 				}
 			});
 			return newTask;
