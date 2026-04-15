@@ -38,8 +38,14 @@ export class TasksService {
 			const task = await this.databaseService.task.findUnique({
 				where: { id }
 			});
+			if (!task) {
+				throw new HttpException("Tarefa não encontrada", HttpStatus.NOT_FOUND);
+			}
 			return task;
 		} catch (error) {
+			if (error.status === HttpStatus.NOT_FOUND) {
+				throw error;
+			}
 			throw new HttpException(
 				"Erro ao buscar a tarefa",
 				HttpStatus.INTERNAL_SERVER_ERROR
