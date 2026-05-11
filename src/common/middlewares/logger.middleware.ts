@@ -11,7 +11,8 @@ export class LoggerMiddleware implements NestMiddleware {
 		const authorization = req.headers.authorization
 		if (authorization) {
 			req['users'] = {
-				token: authorization
+				token: authorization,
+				role: 'admin'
 			}
 		}
 		next()

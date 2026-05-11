@@ -9,6 +9,7 @@ import {
 	Body,
 	ParseIntPipe,
 	UseInterceptors,
+	UseGuards
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create.task.dto';
@@ -17,15 +18,24 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { LoggerInterceptor } from 'src/common/interceptors/logger.interceptor';
 import { BodyCreateTaskInterceptor } from 'src/common/interceptors/body-create-task.interceptor';
 import { AddHeaderInterceptor } from 'src/common/interceptors/add-header.interceptor';
+import { AuthAdminGuard } from 'src/common/guards/admin.guards';
+import { APP_GUARD } from '@nestjs/core';
+import { TasksUtils } from './tasks.utils';
 
 @Controller('tasks')
+@UseGuards(AuthAdminGuard)
 export class TasksController {
-	constructor(private readonly taskService: TasksService) { }
+	constructor(
+		private readonly taskService: TasksService,
+		private readonly tasksUtils: TasksUtils
+	) { }
 
 	@Get()
 	@UseInterceptors(LoggerInterceptor)
 	@UseInterceptors(AddHeaderInterceptor)
+	//@UseGuards(AuthAdminGuard)
 	getTasks(@Query() paginationDto: PaginationDto) {
+		console.log(this.tasksUtils.splitString('Hello World from TasksController'))
 		return this.taskService.listAllTasks(paginationDto)
 	}
 
