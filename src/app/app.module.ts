@@ -9,9 +9,14 @@ import {
   RequestMethod
 } from '@nestjs/common';
 import { LoggerMiddleware } from 'src/common/middlewares/logger.middleware';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [TasksModule, UsersModule],
+  imports: [
+    TasksModule,
+    UsersModule,
+    AuthModule
+  ],
   controllers: [AppController],
   providers: [
     AppService,
