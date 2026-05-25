@@ -1,8 +1,17 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+	HttpException,
+	HttpStatus,
+	Injectable,
+	Post,
+	Body,
+	Put
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create.user.dto';
 import { UpdateUserDto } from './dto/update.user.dto';
-import { DatabaseService } from 'src/database/database.service';
-import { HashingServiceProtocol } from 'src/auth/hash/hashing.service';
+import { DatabaseService } from '../database/database.service';
+import { HashingServiceProtocol } from '../auth/hash/hashing.service';
+import { PayloadTokenDto } from '../auth/dto/payload-token.dto';
+import { find } from 'rxjs';
 
 @Injectable()
 export class UsersService {
@@ -31,7 +40,7 @@ export class UsersService {
 		}
 	}
 
-	async create(createUserDto: CreateUserDto) {
+	async create( @Body() createUserDto: CreateUserDto) {
 		try {
 			const passwordHash = await this.hashingService.hash(createUserDto.password);
 			const newUser = await this.databaseService.user.create({
@@ -52,7 +61,11 @@ export class UsersService {
 		}
 	}
 
-	async update(id: number, updateUserDto: UpdateUserDto) {
+	async update(
+		id: number,
+		updateUserDto: UpdateUserDto,
+		tokenPayload: PayloadTokenDto
+	) {
 		try {
 			const findUser = await this.databaseService.user.findUnique({
 				where: { id }
@@ -60,6 +73,10 @@ export class UsersService {
 
 			if (!findUser) {
 				throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
+			}
+
+			if(findUser.id !== tokenPayload.sub) {
+				throw new HttpException('Unauthorized to update this user', HttpStatus.UNAUTHORIZED);
 			}
 
 			let passwordHash = await this.cryptoPassword(updateUserDto.password, findUser.passwordHash)
@@ -80,11 +97,12 @@ export class UsersService {
 
 			return updatedUser;
 		} catch (error) {
+			if (error instanceof HttpException) throw error
 			throw new HttpException('Failed to update user', HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	async delete(id: number) {
+	async delete(id: number, tokenPayload: PayloadTokenDto) {
 		try {
 			const findUser = await this.databaseService.user.findUnique({
 				where: { id }
@@ -94,12 +112,17 @@ export class UsersService {
 				throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
 			}
 
+			if(findUser.id !== tokenPayload.sub) {
+				throw new HttpException('Unauthorized to update this user', HttpStatus.UNAUTHORIZED);
+			}
+
 			await this.databaseService.user.delete({
 				where: { id }
 			});
 
 			return { message: 'User deleted successfully' };
 		} catch (error) {
+			if (error instanceof HttpException) throw error
 			throw new HttpException('Failed to delete user', HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
