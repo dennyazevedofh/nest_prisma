@@ -3,14 +3,16 @@ import {
   Module,
   NestModule,
   RequestMethod
-} from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { TasksModule } from '../tasks/tasks.module';
-import { UsersModule } from '../users/users.module';
-import { LoggerMiddleware } from '../common/middlewares/logger.middleware';
-import { AuthModule } from '../auth/auth.module';
-import { ConfigModule } from '@nestjs/config';
+} from '@nestjs/common'
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+import { TasksModule } from '../tasks/tasks.module'
+import { UsersModule } from '../users/users.module'
+import { LoggerMiddleware } from '../common/middlewares/logger.middleware'
+import { AuthModule } from '../auth/auth.module'
+import { ConfigModule } from '@nestjs/config'
+import { join } from 'node:path'
+import { ServeStaticModule } from '@nestjs/serve-static'
 
 @Module({
   imports: [
@@ -20,7 +22,11 @@ import { ConfigModule } from '@nestjs/config';
     }),
     TasksModule,
     UsersModule,
-    AuthModule
+    AuthModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'public', 'files'),
+      serveRoot: '/files'
+    })
   ],
   controllers: [AppController],
   providers: [

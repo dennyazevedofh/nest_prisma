@@ -5,12 +5,15 @@ import {
 	Post,
 	Body,
 	Put
-} from '@nestjs/common';
-import { CreateUserDto } from './dto/create.user.dto';
-import { UpdateUserDto } from './dto/update.user.dto';
-import { DatabaseService } from '../database/database.service';
-import { HashingServiceProtocol } from '../auth/hash/hashing.service';
-import { PayloadTokenDto } from '../auth/dto/payload-token.dto';
+} from '@nestjs/common'
+import { CreateUserDto } from './dto/create.user.dto'
+import { UpdateUserDto } from './dto/update.user.dto'
+import { DatabaseService } from '../database/database.service'
+import { HashingServiceProtocol } from '../auth/hash/hashing.service'
+import { PayloadTokenDto } from '../auth/dto/payload-token.dto'
+import 'multer'
+import * as path from 'node:path'
+import * as fs from 'node:fs'
 import { find } from 'rxjs';
 
 @Injectable()
@@ -28,6 +31,7 @@ export class UsersService {
 					id: true,
 					email: true,
 					name: true,
+					avatar: true,
 					tasks: true
 				}
 			});
@@ -124,6 +128,44 @@ export class UsersService {
 		} catch (error) {
 			if (error instanceof HttpException) throw error
 			throw new HttpException('Failed to delete user', HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	async uploadAvatarImage(
+		tokenPayload: PayloadTokenDto,
+		file: Express.Multer.File
+	) {
+		try {
+			const mimeType = file.mimetype
+			const fileExtension = path.extname(file.originalname).toLowerCase().substring(1)
+			const fileName = `${tokenPayload.sub}.${fileExtension}`
+			const fileLocale = path.resolve(process.cwd(), 'public', 'files', fileName)
+
+			await fs.promises.writeFile(fileLocale, file.buffer)
+
+			const user = await this.databaseService.user.findFirst({
+				where: { id: tokenPayload.sub }
+			})
+
+			if (!user) {
+				throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
+			}
+
+			const updatedUser = await this.databaseService.user.update({
+				where: { id: user.id },
+				data: {
+					avatar: fileName
+				},
+				select: {
+					id: true,
+					email: true,
+					name: true,
+					avatar: true
+				}
+			});
+			return updatedUser;
+		} catch (error) {
+			throw new HttpException('Failed to upload avatar image', HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

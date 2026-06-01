@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `user` ADD COLUMN `active` BOOLEAN NOT NULL DEFAULT true,
+    ADD COLUMN `avatar` VARCHAR(191) NULL;
