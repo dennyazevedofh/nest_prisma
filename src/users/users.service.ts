@@ -40,6 +40,7 @@ export class UsersService {
 
 			throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
 		} catch (error) {
+			if (error instanceof HttpException) throw error
 			throw new HttpException('Failed to find user', HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
