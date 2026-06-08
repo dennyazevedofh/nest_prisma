@@ -1,0 +1,10 @@
+# Dockerfile.dev
+
+FROM node:24
+
+WORKDIR /app
+
+# Porta padrão da app (ajuste se usar outra)
+EXPOSE 4000
+
+CMD ["tail", "-f", "/dev/null"]
