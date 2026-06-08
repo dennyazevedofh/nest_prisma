@@ -66,7 +66,7 @@ describe('TasksService', () => {
 
 			jest.spyOn(databaseService.task, 'findMany').mockResolvedValue(mockTasks)
 
-			const result = await tasksService.findAll(paginationDto)
+			const result = await tasksService.listAllTasks(paginationDto)
 
 			expect(databaseService.task.findMany).toHaveBeenCalledWith({
 				take: paginationDto.limit,
@@ -92,7 +92,7 @@ describe('TasksService', () => {
 
 			jest.spyOn(databaseService.task, 'findUnique').mockResolvedValue(mockTask)
 
-			const result = await tasksService.findOne(1)
+			const result = await tasksService.findOneTask(1)
 
 			expect(databaseService.task.findUnique).toHaveBeenCalledWith({
 				where: { id: 1 }
@@ -103,7 +103,7 @@ describe('TasksService', () => {
 		it('should throw an error when task not found', async () => {
 			jest.spyOn(databaseService.task, 'findUnique').mockResolvedValue(null)
 
-			await expect(tasksService.findOne(1)).rejects.toThrow(
+			await expect(tasksService.findOneTask(1)).rejects.toThrow(
 				new HttpException('Tarefa não encontrada', HttpStatus.NOT_FOUND)
 			)
 		})
@@ -164,7 +164,7 @@ describe('TasksService', () => {
 			jest.spyOn(databaseService.task, 'create').mockRejectedValue(new Error('Database error'))
 
 			await expect(tasksService.create(createTaskDto, tokenPayload)).rejects.toThrow(
-				new HttpException('Erro ao criar tarefa', HttpStatus.INTERNAL_SERVER_ERROR)
+				new HttpException('Erro ao criar a tarefa', HttpStatus.INTERNAL_SERVER_ERROR)
 			)
 		})
 	})
@@ -257,7 +257,7 @@ describe('TasksService', () => {
 			jest.spyOn(databaseService.task, 'findUnique').mockResolvedValue(mockTask)
 
 			await expect(tasksService.update(1, updateTaskDto, tokenPayload)).rejects.toThrow(
-				new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED)
+				new HttpException('Você não tem permissão para atualizar esta tarefa', HttpStatus.UNAUTHORIZED)
 			)
 			expect(databaseService.task.update).not.toHaveBeenCalled()
 		})
@@ -287,7 +287,7 @@ describe('TasksService', () => {
 			jest.spyOn(databaseService.task, 'update').mockRejectedValue(new Error('Database error'))
 
 			await expect(tasksService.update(1, updateTaskDto, tokenPayload)).rejects.toThrow(
-				new HttpException('Erro ao atualizar tarefa', HttpStatus.INTERNAL_SERVER_ERROR)
+				new HttpException('Erro ao atualizar a tarefa', HttpStatus.INTERNAL_SERVER_ERROR)
 			)
 		})
 	})
@@ -322,7 +322,7 @@ describe('TasksService', () => {
 			expect(databaseService.task.delete).toHaveBeenCalledWith({
 				where: { id: 1 }
 			})
-			expect(result).toEqual({ message: 'Tarefa removida com sucesso!' })
+			expect(result).toEqual({ message: 'Tarefa deletada com sucesso' })
 		})
 
 		it('should throw an error when task not found', async () => {
@@ -364,7 +364,7 @@ describe('TasksService', () => {
 			jest.spyOn(databaseService.task, 'findUnique').mockResolvedValue(mockTask)
 
 			await expect(tasksService.delete(1, tokenPayload)).rejects.toThrow(
-				new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED)
+				new HttpException('Você não tem permissão para excluir esta tarefa', HttpStatus.UNAUTHORIZED)
 			)
 			expect(databaseService.task.delete).not.toHaveBeenCalled()
 		})
@@ -391,7 +391,7 @@ describe('TasksService', () => {
 			jest.spyOn(databaseService.task, 'delete').mockRejectedValue(new Error('Database error'))
 
 			await expect(tasksService.delete(1, tokenPayload)).rejects.toThrow(
-				new HttpException('Erro ao remover tarefa', HttpStatus.INTERNAL_SERVER_ERROR)
+				new HttpException('Erro ao deletar a tarefa', HttpStatus.INTERNAL_SERVER_ERROR)
 			)
 		})
 	})

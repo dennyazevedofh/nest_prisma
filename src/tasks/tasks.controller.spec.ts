@@ -10,8 +10,8 @@ describe('TasksController', () => {
 	let controller: TasksController
 
 	const tasksServiceMock = {
-		findAll: jest.fn(),
-		findOne: jest.fn(),
+		listAllTasks: jest.fn(),
+		findOneTask: jest.fn(),
 		create: jest.fn(),
 		update: jest.fn(),
 		delete: jest.fn()
@@ -42,19 +42,19 @@ describe('TasksController', () => {
 
 		tasksUtilsMock.splitString.mockReturnValue(['Hello', 'World', 'from', 'NestJS'])
 
-		await controller.findAllTasks(paginationDto)
+		await controller.getTasks(paginationDto)
 
-		expect(tasksUtilsMock.splitString).toHaveBeenCalledWith('Hello World from NestJS')
-		expect(tasksServiceMock.findAll).toHaveBeenCalledWith(paginationDto)
+		expect(tasksUtilsMock.splitString).toHaveBeenCalledWith('Hello World from TasksController')
+		expect(tasksServiceMock.listAllTasks).toHaveBeenCalledWith(paginationDto)
 		expect(consoleSpy).toHaveBeenCalledWith(['Hello', 'World', 'from', 'NestJS'])
 	})
 
 	it('should find one task by id', async () => {
 		const taskId = 1
 
-		await controller.findOneTask(taskId)
+		await controller.findSingleTask(taskId)
 
-		expect(tasksServiceMock.findOne).toHaveBeenCalledWith(taskId)
+		expect(tasksServiceMock.findOneTask).toHaveBeenCalledWith(taskId)
 	})
 
 	it('should create a task', async () => {

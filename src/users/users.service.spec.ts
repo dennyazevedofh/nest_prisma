@@ -1,4 +1,4 @@
-import { DatabaseService } from '../../src/database/database.service'
+import { DatabaseService } from '../database/database.service'
 import { HashingServiceProtocol } from '../auth/hash/hashing.service'
 import { CreateUserDto } from './dto/create.user.dto'
 import { UsersService } from './users.service'
@@ -214,7 +214,7 @@ describe('UsersService', () => {
 			jest.spyOn(databaseService.user, 'findUnique').mockResolvedValue(mockUser)
 
 			await expect(usersService.update(1, updateUserDto, tokenPayload)).rejects.toThrow(
-				new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED)
+				new HttpException('Unauthorized to update this user', HttpStatus.UNAUTHORIZED)
 			)
 		})
 	})
@@ -295,7 +295,7 @@ describe('UsersService', () => {
 			jest.spyOn(databaseService.user, 'findUnique').mockResolvedValue(mockUser)
 
 			await expect(usersService.delete(1, tokenPayload)).rejects.toThrow(
-				new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED)
+				new HttpException('Unauthorized to update this user', HttpStatus.UNAUTHORIZED)
 			)
 			expect(databaseService.user.delete).not.toHaveBeenCalled()
 		})

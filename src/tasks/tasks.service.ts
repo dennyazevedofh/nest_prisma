@@ -125,6 +125,7 @@ export class TasksService {
 			});
 			return { message: "Tarefa deletada com sucesso" };
 		} catch (error) {
+			if (error instanceof HttpException) throw error
 			throw new HttpException(
 				"Erro ao deletar a tarefa",
 				HttpStatus.INTERNAL_SERVER_ERROR
