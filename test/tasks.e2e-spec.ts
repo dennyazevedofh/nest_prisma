@@ -76,16 +76,16 @@ describe('Tasks (e2e)', () => {
 					serveRoot: '/files'
 				})
 			],
-		}).compile();
+		}).compile()
 
-		app = module.createNestApplication();
+		app = module.createNestApplication()
 		app.useGlobalPipes(new ValidationPipe({
 			whitelist: true,
 			transform: true,
 		}))
 		databaseService = module.get<DatabaseService>(DatabaseService)
-		await app.init();
-	});
+		await app.init()
+	})
 
 	afterEach(async () => {
 		if (createdTaskIds.length > 0) {
@@ -162,7 +162,7 @@ describe('Tasks (e2e)', () => {
 			const response = await request(app.getHttpServer())
 				.post('/tasks')
 				.send(createTaskDto)
-				.expect(400)
+				.expect(401)
 
 			expect(response.body.statusCode).toBe(401)
 		})
@@ -215,7 +215,7 @@ describe('Tasks (e2e)', () => {
 		it('/tasks/:id (GET) - should return task not found', async () => {
 			const response = await request(app.getHttpServer())
 				.get('/tasks/999999')
-				.expect(400)
+				.expect(404)
 
 			expect(response.body.statusCode).toBe(404)
 		})
@@ -258,7 +258,7 @@ describe('Tasks (e2e)', () => {
 			const response = await request(app.getHttpServer())
 				.put('/tasks/1')
 				.send({ name: 'Task Update Without Token' })
-				.expect(400)
+				.expect(401)
 
 			expect(response.body.statusCode).toBe(401)
 		})
@@ -280,7 +280,7 @@ describe('Tasks (e2e)', () => {
 				.put(`/tasks/${createResponse.body.id}`)
 				.set('Authorization', `Bearer ${owner.token}`)
 				.send({ name: 'Task Update Unauthorized' })
-				.expect(400)
+				.expect(401)
 
 			expect(response.body.statusCode).toBe(401)
 		})
@@ -292,7 +292,7 @@ describe('Tasks (e2e)', () => {
 				.put('/tasks/999999')
 				.set('Authorization', `Bearer ${token}`)
 				.send({ name: 'Task Not Found Update' })
-				.expect(400)
+				.expect(404)
 
 			expect(response.body.statusCode).toBe(404)
 		})
@@ -315,14 +315,14 @@ describe('Tasks (e2e)', () => {
 				.expect(200)
 
 			expect(deleteResponse.body).toEqual({
-				message: 'Tarefa removida com sucesso!'
+				message: 'Tarefa deletada com sucesso'
 			})
 
 			createdTaskIds = createdTaskIds.filter((id) => id !== createResponse.body.id)
 
 			const getResponse = await request(app.getHttpServer())
 				.get(`/tasks/${createResponse.body.id}`)
-				.expect(400)
+				.expect(404)
 
 			expect(getResponse.body.statusCode).toBe(404)
 		})
@@ -330,7 +330,7 @@ describe('Tasks (e2e)', () => {
 		it('/tasks/:id (DELETE) - should return unauthorized without token', async () => {
 			const response = await request(app.getHttpServer())
 				.delete('/tasks/1')
-				.expect(400)
+				.expect(401)
 
 			expect(response.body.statusCode).toBe(401)
 		})
@@ -351,7 +351,7 @@ describe('Tasks (e2e)', () => {
 			const response = await request(app.getHttpServer())
 				.delete(`/tasks/${createResponse.body.id}`)
 				.set('Authorization', `Bearer ${owner.token}`)
-				.expect(400)
+				.expect(401)
 
 			expect(response.body.statusCode).toBe(401)
 		})
@@ -362,7 +362,7 @@ describe('Tasks (e2e)', () => {
 			const response = await request(app.getHttpServer())
 				.delete('/tasks/999999')
 				.set('Authorization', `Bearer ${token}`)
-				.expect(400)
+				.expect(404)
 
 			expect(response.body.statusCode).toBe(404)
 		})

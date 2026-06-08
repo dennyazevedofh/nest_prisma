@@ -34,7 +34,7 @@ export class TasksController {
 	@UseInterceptors(LoggerInterceptor)
 	@UseInterceptors(AddHeaderInterceptor)
 	getTasks(@Query() paginationDto: PaginationDto) {
-		console.log(this.tasksUtils.splitString('Hello World from TasksController'))
+		this.tasksUtils.splitString('Hello World from TasksController')
 		return this.taskService.listAllTasks(paginationDto)
 	}
 

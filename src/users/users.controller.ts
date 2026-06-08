@@ -35,12 +35,12 @@ export class UsersController {
 
 	@Get(':id')
 	findOneUser(@Param('id', ParseIntPipe) id: number) {
-		return this.usersService.findOne(id);
+		return this.usersService.findOne(id)
 	}
 
 	@Post()
 	createUser(@Body() createUserDto: CreateUserDto) {
-		return this.usersService.create(createUserDto);
+		return this.usersService.create(createUserDto)
 	}
 
 	@UseGuards(AuthTokenGuard)
@@ -50,7 +50,7 @@ export class UsersController {
 		@Body() updateUserDto: UpdateUserDto,
 		@TokenPayloadParam() tokenPayload: PayloadTokenDto
 	) {
-		return this.usersService.update(id, updateUserDto, tokenPayload);
+		return this.usersService.update(id, updateUserDto, tokenPayload)
 	}
 
 	@UseGuards(AuthTokenGuard)
@@ -59,7 +59,7 @@ export class UsersController {
 		@Param('id', ParseIntPipe) id: number,
 		@TokenPayloadParam() tokenPayload: PayloadTokenDto
 	) {
-		return this.usersService.delete(id, tokenPayload);
+		return this.usersService.delete(id, tokenPayload)
 	}
 
 	@UseGuards(AuthTokenGuard)
@@ -80,7 +80,7 @@ export class UsersController {
 				})
 		) file: Express.Multer.File
 	) {
-		return this.usersService.uploadAvatarImage(tokenPayload, file);
+		return this.usersService.uploadAvatarImage(tokenPayload, file)
 	}
 
 		@UseGuards(AuthTokenGuard)

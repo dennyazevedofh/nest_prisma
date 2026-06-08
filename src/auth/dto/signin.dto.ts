@@ -8,7 +8,7 @@ import {
 
 export class SignInDto {
 	@IsEmail()
-	readonly email: string;
+	readonly email: string
 
 	@IsStrongPassword({
 		minLength: 8,
@@ -20,5 +20,5 @@ export class SignInDto {
 	@IsString()
 	@MinLength(8)
 	@IsNotEmpty()
-	readonly password: string;
+	readonly password: string
 }

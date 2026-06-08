@@ -38,7 +38,6 @@ describe('TasksController', () => {
 			limit: 10,
 			offset: 0
 		}
-		const consoleSpy = jest.spyOn(console, 'log').mockImplementation()
 
 		tasksUtilsMock.splitString.mockReturnValue(['Hello', 'World', 'from', 'NestJS'])
 
@@ -46,7 +45,6 @@ describe('TasksController', () => {
 
 		expect(tasksUtilsMock.splitString).toHaveBeenCalledWith('Hello World from TasksController')
 		expect(tasksServiceMock.listAllTasks).toHaveBeenCalledWith(paginationDto)
-		expect(consoleSpy).toHaveBeenCalledWith(['Hello', 'World', 'from', 'NestJS'])
 	})
 
 	it('should find one task by id', async () => {

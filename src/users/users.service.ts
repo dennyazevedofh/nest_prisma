@@ -14,7 +14,7 @@ import { PayloadTokenDto } from '../auth/dto/payload-token.dto'
 import 'multer'
 import * as path from 'node:path'
 import * as fs from 'node:fs'
-import { find } from 'rxjs';
+import { find } from 'rxjs'
 
 @Injectable()
 export class UsersService {
@@ -34,20 +34,20 @@ export class UsersService {
 					avatar: true,
 					tasks: true
 				}
-			});
+			})
 
-			if (user) return user;
+			if (user) return user
 
-			throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
+			throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
 		} catch (error) {
 			if (error instanceof HttpException) throw error
-			throw new HttpException('Failed to find user', HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException('Failed to find user', HttpStatus.INTERNAL_SERVER_ERROR)
 		}
 	}
 
 	async create( @Body() createUserDto: CreateUserDto) {
 		try {
-			const passwordHash = await this.hashingService.hash(createUserDto.password);
+			const passwordHash = await this.hashingService.hash(createUserDto.password)
 			const newUser = await this.databaseService.user.create({
 				data: {
 					name: createUserDto.name,
@@ -59,10 +59,10 @@ export class UsersService {
 					email: true,
 					name: true,
 				}
-			});
-			return newUser;
+			})
+			return newUser
 		} catch (error) {
-			throw new HttpException('Failed to create user', HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException('Failed to create user', HttpStatus.INTERNAL_SERVER_ERROR)
 		}
 	}
 
@@ -74,14 +74,14 @@ export class UsersService {
 		try {
 			const findUser = await this.databaseService.user.findUnique({
 				where: { id }
-			});
+			})
 
 			if (!findUser) {
-				throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
+				throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
 			}
 
 			if(findUser.id !== tokenPayload.sub) {
-				throw new HttpException('Unauthorized to update this user', HttpStatus.UNAUTHORIZED);
+				throw new HttpException('Unauthorized to update this user', HttpStatus.UNAUTHORIZED)
 			}
 
 			let passwordHash = await this.cryptoPassword(updateUserDto.password, findUser.passwordHash)
@@ -98,12 +98,12 @@ export class UsersService {
 					email: true,
 					name: true,
 				}
-			});
+			})
 
-			return updatedUser;
+			return updatedUser
 		} catch (error) {
 			if (error instanceof HttpException) throw error
-			throw new HttpException('Failed to update user', HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException('Failed to update user', HttpStatus.INTERNAL_SERVER_ERROR)
 		}
 	}
 
@@ -111,24 +111,24 @@ export class UsersService {
 		try {
 			const findUser = await this.databaseService.user.findUnique({
 				where: { id }
-			});
+			})
 
 			if (!findUser) {
-				throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
+				throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
 			}
 
 			if(findUser.id !== tokenPayload.sub) {
-				throw new HttpException('Unauthorized to update this user', HttpStatus.UNAUTHORIZED);
+				throw new HttpException('Unauthorized to update this user', HttpStatus.UNAUTHORIZED)
 			}
 
 			await this.databaseService.user.delete({
 				where: { id }
-			});
+			})
 
-			return { message: 'User deleted successfully' };
+			return { message: 'User deleted successfully' }
 		} catch (error) {
 			if (error instanceof HttpException) throw error
-			throw new HttpException('Failed to delete user', HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException('Failed to delete user', HttpStatus.INTERNAL_SERVER_ERROR)
 		}
 	}
 
@@ -149,7 +149,7 @@ export class UsersService {
 			})
 
 			if (!user) {
-				throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
+				throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
 			}
 
 			const updatedUser = await this.databaseService.user.update({
@@ -163,10 +163,10 @@ export class UsersService {
 					name: true,
 					avatar: true
 				}
-			});
-			return updatedUser;
+			})
+			return updatedUser
 		} catch (error) {
-			throw new HttpException('Failed to upload avatar image', HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException('Failed to upload avatar image', HttpStatus.INTERNAL_SERVER_ERROR)
 		}
 	}
 

@@ -1,11 +1,11 @@
-import { DatabaseService } from '../src/database/database.service'
-import { Test, TestingModule } from '@nestjs/testing'
-import { INestApplication, ValidationPipe } from '@nestjs/common'
-import request from 'supertest'
 import { ConfigModule } from '@nestjs/config'
 import { TasksModule } from '../src/tasks/tasks.module'
 import { UsersModule } from '../src/users/users.module'
 import { AuthModule } from '../src/auth/auth.module'
+import { DatabaseService } from '../src/database/database.service'
+import request from 'supertest'
+import { Test, TestingModule } from '@nestjs/testing'
+import { INestApplication, ValidationPipe } from '@nestjs/common'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'node:path'
 import * as dotenv from 'dotenv'
@@ -67,16 +67,16 @@ describe('Users (e2e)', () => {
 					serveRoot: '/files'
 				})
 			],
-		}).compile();
+		}).compile()
 
-		app = module.createNestApplication();
+		app = module.createNestApplication()
 		app.useGlobalPipes(new ValidationPipe({
 			whitelist: true,
 			transform: true,
 		}))
 		databaseService = module.get<DatabaseService>(DatabaseService)
-		await app.init();
-	});
+		await app.init()
+	})
 
 	afterEach(async () => {
 		if (createdUserIds.length > 0) {
@@ -129,12 +129,7 @@ describe('Users (e2e)', () => {
 				.expect(400)
 
 			expect(response.body.statusCode).toBe(400)
-			expect(response.body.message).toEqual(
-				expect.objectContaining({
-					statusCode: 400,
-					error: 'Bad Request'
-				})
-			)
+			expect(response.body.message).toContain('email must be an email')
 		})
 
 		it('/users (POST) - should return bad request with weak password', async () => {
@@ -149,12 +144,7 @@ describe('Users (e2e)', () => {
 				.expect(400)
 
 			expect(response.body.statusCode).toBe(400)
-			expect(response.body.message).toEqual(
-				expect.objectContaining({
-					statusCode: 400,
-					error: 'Bad Request'
-				})
-			)
+			expect(response.body.message).toContain('password is not strong enough')
 		})
 
 		it('/users/:id (GET) - findOneUser', async () => {
@@ -223,7 +213,7 @@ describe('Users (e2e)', () => {
 			const response = await request(app.getHttpServer())
 				.put(`/users/${createResponse.body.id}`)
 				.send({ name: faker.person.fullName() })
-				.expect(400)
+				.expect(401)
 
 			expect(response.body.statusCode).toBe(401)
 		})
@@ -236,7 +226,7 @@ describe('Users (e2e)', () => {
 				.put(`/users/${otherUser.userId}`)
 				.set('Authorization', `Bearer ${owner.token}`)
 				.send({ name: faker.person.fullName() })
-				.expect(400)
+				.expect(401)
 
 			expect(response.body.statusCode).toBe(401)
 		})
@@ -282,7 +272,7 @@ describe('Users (e2e)', () => {
 
 			const response = await request(app.getHttpServer())
 				.delete(`/users/${createResponse.body.id}`)
-				.expect(400)
+				.expect(401)
 
 			expect(response.body.statusCode).toBe(401)
 		})
@@ -294,7 +284,7 @@ describe('Users (e2e)', () => {
 			const response = await request(app.getHttpServer())
 				.delete(`/users/${otherUser.userId}`)
 				.set('Authorization', `Bearer ${owner.token}`)
-				.expect(400)
+				.expect(401)
 
 			expect(response.body.statusCode).toBe(401)
 		})
@@ -317,7 +307,7 @@ describe('Users (e2e)', () => {
 					email: faker.internet.email().toLowerCase(),
 					password: `Aa1!${faker.string.alphanumeric(8)}`
 				})
-				.expect(400)
+				.expect(401)
 
 			expect(response.body.statusCode).toBe(401)
 		})

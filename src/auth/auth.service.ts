@@ -26,10 +26,10 @@ export class AuthService {
 	async authenticate(signInDto: SignInDto) {
 		const user = await this.databaseService.user.findUnique({
 			where: { email: signInDto.email },
-		});
+		})
 
 		if (!user) {
-			throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+			throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED)
 		}
 
 		const isPasswordValid = await this.hashingService.compare(
@@ -38,11 +38,11 @@ export class AuthService {
 		)
 
 		if (!isPasswordValid) {
-			throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+			throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED)
 		}
 
 		if (!this.jwtConfiguration.secret) {
-			throw new HttpException('JWT secret is not configured', HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException('JWT secret is not configured', HttpStatus.INTERNAL_SERVER_ERROR)
 		}
 
 		const tokenTtl = this.jwtConfiguration.ttl
